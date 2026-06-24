@@ -1,6 +1,4 @@
 import datetime
-from ast import List
-
 from pydantic import BaseModel, ConfigDict
 
 
@@ -10,24 +8,26 @@ class BookType(BaseModel):
     publication_date: datetime.date
     author_id: int
 
+
 class BookCreate(BookType):
     pass
 
-class Book(BookType):
-    id: int
 
+class BookRead(BookType):
+    id: int
     model_config = ConfigDict(from_attributes=True)
+
 
 class AuthorType(BaseModel):
     name: str
     bio: str
 
+
 class AuthorCreate(AuthorType):
     pass
 
-class Author(BaseModel):
+
+class Author(AuthorType):
     id: int
-    books: List[Book] = []
-
+    books: list[BookRead] = []
     model_config = ConfigDict(from_attributes=True)
-

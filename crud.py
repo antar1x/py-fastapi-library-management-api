@@ -1,11 +1,47 @@
-from typing import List
-
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from db import models
-from db.models import Author
+from db.models import Author, Book
+from schemas import AuthorCreate, BookCreate
 
 
-def get_all_authors(db: Session, author_id: int) -> Author:
-    return db.scalar(select(models.Author).where(Author.id == author_id))
+def get_all_authors(db: Session, skip: int = 0, limit: int = 10) -> list[Author]:
+    return list(db.scalars(select(Author).offset(skip).limit(limit)))
+
+
+def get_author(db: Session, author_id: int) -> Author | None:
+    return db.scalar(select(Author).where(Author.id == author_id))
+
+
+def create_author(db: Session, author: AuthorCreate) -> Author:
+    db_author = Author(name=author.name, bio=author.bio)
+    db.add(db_author)
+    db.commit()
+    db.refresh(db_author)
+    return db_author
+
+
+def get_books(
+    db: Session,
+    skip: int = 0,
+    limit: int = 10,
+    author_id: int | None = None
+) -> list[Book]:
+    query = select(Book)
+
+    if author_id is not None:
+        query = query.where(Book.author_id == author_id)
+
+    return list(db.scalars(query.offset(skip).limit(limit)))
+
+
+def get_book(db: Session, book_id: int) -> Book | None:
+    return db.scalar(select(Book).where(Book.id == book_id))
+
+
+def create_book(db: Session, book: BookCreate) -> Book:
+    db_book = Book(**book.model_dump())
+    db.add(db_book)
+    db.commit()
+    db.refresh(db_book)
+    return db_book
