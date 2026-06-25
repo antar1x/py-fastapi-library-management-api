@@ -32,6 +32,7 @@ def create_book(author_id: int, book: BookCreate, db: CurrentSession):
     author = crud.get_author(author_id=author_id, db=db)
     if author is None:
         raise HTTPException(status_code=404, detail="Author not found")
+    book.author_id = author_id
     return crud.create_book(book=book, db=db)
 
 
