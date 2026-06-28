@@ -6,7 +6,6 @@ class BookType(BaseModel):
     title: str
     summary: str
     publication_date: datetime.date
-    author_id: int
 
 
 class BookCreate(BookType):
@@ -15,6 +14,7 @@ class BookCreate(BookType):
 
 class BookRead(BookType):
     id: int
+    author_id: int
     model_config = ConfigDict(from_attributes=True)
 
 
